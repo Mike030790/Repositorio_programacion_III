@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Contacto</title>
+    <style>
+        body {
+            padding: 0;
+            background-color: #e2ede8;
+        }
+        .header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+        .nav {
+            background-color: #666;
+            color: white;
+            padding: 0.5em;
+            text-align: center;
+        }
+        .nav a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .main {
+            padding: 1em;
+        }
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1em;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        .form {
+            margin: auto;
+            background-color: white;
+            padding: 1em;
+        }
+        .input, select, textarea {
+            width: 100%;
+            margin-bottom: 1em;
+            border: 1px solid #ccc;
+        }
+        .button {
+            background-color: #333;
+            color: white;
+            padding: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Contacto</h1>
+    </div>
+    <div class="nav">
+        <a href="#">Inicio</a>
+        <a href="#">Acerca de</a>
+        <a href="#">Servicios</a>
+        <a href="#">Contacto</a>
+    </div>
+    <div class="main">
+        <form class="form" action="exito.html" method="post">
+            <label for="nombre">Nombre:</label>
+            <input class="input" type="text" id="nombre" name="nombre" required>
+            
+            <label for="email">Email:</label>
+            <input class="input" type="email" id="email" name="email" required>
+            
+            <label for="mensaje">Mensaje:</label>
+            <textarea class="input" id="mensaje" name="mensaje" maxlength="100" required></textarea>
+            
+            <label for="fecha">Fecha:</label>
+            <input class="input" type="date" id="fecha" name="fecha" required>
+            
+            <label for="provincia">Provincia:</label>
+            <select class="input" id="provincia" name="provincia" required>
+                <option value="N/A">Seleccione</option>
+                <option value="1">San José</option>
+                <option value="2">Alajuela</option>
+                <option value="3">Heredia</option>
+                <option value="4">Cartago</option>
+                <option value="5">Puntarenas</option>
+                <option value="6">Guanacaste</option>
+                <option value="7">Limón</option>
+            </select>
+            
+            <label for="codigo-postal">Código Postal:</label>
+            <input class="input" type="number" id="codigo-postal" name="codigo-postal" required>
+            
+            <button class="button" type="submit">Enviar</button>
+        </form>
+    </div>
+    <div class="footer">
+        © 2024 Tu Empresa
+    </div>
+</body>
+</html>
