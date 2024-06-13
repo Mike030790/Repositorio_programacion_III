@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservaciones de Hotel</title>
+    
+    <!--  logra que ambos botones ("Reservar Hotel" y "Abrir txt") aparezcan
+    con una ligera separación entre ellos, ademas para que funcione
+    se agrega (class="form-inline") a las lineas 57 y 86 -->
+    <style>
+        .form-inline {
+            margin-bottom: 10px;
+        }
+        .form-inline input[type="submit"] {
+            margin-right: 10px;
+        }
+    </style>
+
 </head>
 <body>
     <h2>Reservación de Hotel</h2>
@@ -17,12 +30,13 @@
         $observaciones = trim($_POST['observaciones']);
         
         // Validaciones básicas
+
         if (empty($hotel) || empty($nombre) || empty($apellido) || empty($telefono) || empty($fecha)) {
             echo "Todos los campos son requeridos exepto el campo de observaciones.";
         } elseif (!preg_match("/^[a-zA-Z-' ]*$/", $nombre) || !preg_match("/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s'-]*$/", $apellido)) {
             echo "Solo se permiten letras y espacios en el nombre y en el apellido acepta la letra ñ.";
         } elseif (!preg_match("/^[0-9]{8}$/", $telefono)) {
-            //echo "El teléfono debe tener 8 dígitos.";//
+            echo "El teléfono debe tener 8 dígitos.";
         } else {
             // Formato de la reserva
             $reserva = "$hotel,$nombre,$apellido,$telefono,$fecha,$observaciones\n";
@@ -40,7 +54,7 @@
     }
     ?>
     
-    <form action="" method="post">
+    <form action="" method="post" class="form-inline">
         <label for="hotel">Seleccione un hotel:</label>
         <select name="hotel" id="hotel" required>
             <option value="Tabacon Thermal Resort & Spa">Tabacon Thermal Resort & Spa</option>
@@ -65,7 +79,12 @@
         <label for="observaciones">Observaciones:</label>
         <textarea id="observaciones" name="observaciones" ></textarea><br><br>
         
-        <input type="submit" value="Procesar">
+        <input type="submit" value="Reservar Hotel">
+    </form>
+
+    <!-- la siguiente linea de codigo hace que se abra el .txt  -->    
+    <form action="reservas.txt" class="form-inline"> 
+        <input type="submit" value="Abrir txt">
     </form>
     
     <h2>Reservas Registradas</h2>
@@ -89,7 +108,7 @@
             echo "No se pudieron cargar las reservas.";
         }
     } else {
-        echo "No hay reservas registradas.";
+    echo "No hay reservas registradas.";
     }
     ?>
 </body>
