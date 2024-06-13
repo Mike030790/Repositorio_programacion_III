@@ -43,11 +43,11 @@
     <form action="" method="post">
         <label for="hotel">Seleccione un hotel:</label>
         <select name="hotel" id="hotel" required>
-            <option value="Hotel A">Hotel A</option>
-            <option value="Hotel B">Hotel B</option>
-            <option value="Hotel C">Hotel C</option>
-            <option value="Hotel D">Hotel D</option>
-            <option value="Hotel E">Hotel E</option>
+            <option value="Tabacon Thermal Resort & Spa">Tabacon Thermal Resort & Spa</option>
+            <option value="Nayara Gardens">Nayara Gardens</option>
+            <option value="Planet Hollywood Costa Rica">Planet Hollywood Costa Rica</option>
+            <option value="The Royal Corin Thermal Water Spa & Resort">The Royal Corin Thermal Water Spa & Resort</option>
+            <option value="Hotel Makanda By The Sea Costa Rica">Hotel Makanda By The Sea Costa Rica</option>
         </select><br><br>
         
         <label for="nombre">Nombre:</label>
@@ -56,8 +56,8 @@
         <label for="apellido">Apellido:</label>
         <input type="text" id="apellido" name="apellido" required><br><br>
         
-        <label for="telefono">Teléfono:</label>
-        <input type="tel" id="telefono" name="telefono" required pattern="[0-9]{10}"><br><br>
+        <input type="tel" id="telefono" name="telefono" required pattern="[0-9]{8}" placeholder="12345678">
+        <small>Ingrese un número de teléfono de 8 dígitos.</small><br><br>
         
         <label for="fecha">Fecha de Reservación:</label>
         <input type="date" id="fecha" name="fecha" required><br><br>
