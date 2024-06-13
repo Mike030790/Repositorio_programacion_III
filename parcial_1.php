@@ -21,8 +21,8 @@
             echo "Todos los campos son requeridos.";
         } elseif (!preg_match("/^[a-zA-Z-' ]*$/", $nombre) || !preg_match("/^[a-zA-Z-' ]*$/", $apellido)) {
             echo "Solo se permiten letras y espacios en el nombre y apellido.";
-        } elseif (!preg_match("/^[0-9]{10}$/", $telefono)) {
-            echo "El teléfono debe tener 10 dígitos.";
+        } elseif (!preg_match("/^[0-9]{8}$/", $telefono)) {
+            //echo "El teléfono debe tener 10 dígitos.";//
         } else {
             // Formato de la reserva
             $reserva = "$hotel,$nombre,$apellido,$telefono,$fecha,$observaciones\n";
@@ -93,4 +93,3 @@
     }
     ?>
 </body>
-</html>
