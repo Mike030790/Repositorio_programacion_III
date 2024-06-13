@@ -17,12 +17,12 @@
         $observaciones = trim($_POST['observaciones']);
         
         // Validaciones básicas
-        if (empty($hotel) || empty($nombre) || empty($apellido) || empty($telefono) || empty($fecha) || empty($observaciones)) {
-            echo "Todos los campos son requeridos.";
-        } elseif (!preg_match("/^[a-zA-Z-' ]*$/", $nombre) || !preg_match("/^[a-zA-Z-' ]*$/", $apellido)) {
-            echo "Solo se permiten letras y espacios en el nombre y apellido.";
+        if (empty($hotel) || empty($nombre) || empty($apellido) || empty($telefono) || empty($fecha)) {
+            echo "Todos los campos son requeridos exepto el campo de observaciones.";
+        } elseif (!preg_match("/^[a-zA-Z-' ]*$/", $nombre) || !preg_match("/^[a-zA-ZñÑáéíóúÁÉÍÓÚüÜ\s'-]*$/", $apellido)) {
+            echo "Solo se permiten letras y espacios en el nombre y en el apellido acepta la letra ñ.";
         } elseif (!preg_match("/^[0-9]{8}$/", $telefono)) {
-            //echo "El teléfono debe tener 10 dígitos.";//
+            //echo "El teléfono debe tener 8 dígitos.";//
         } else {
             // Formato de la reserva
             $reserva = "$hotel,$nombre,$apellido,$telefono,$fecha,$observaciones\n";
@@ -63,7 +63,7 @@
         <input type="date" id="fecha" name="fecha" required><br><br>
         
         <label for="observaciones">Observaciones:</label>
-        <textarea id="observaciones" name="observaciones" required></textarea><br><br>
+        <textarea id="observaciones" name="observaciones" ></textarea><br><br>
         
         <input type="submit" value="Procesar">
     </form>
