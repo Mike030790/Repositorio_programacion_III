@@ -22,5 +22,5 @@ var_dump($nombrepelicula);
 
 // iii. Obtener el valor 4
 echo  "<br>";
-$nombrepelicula = $peliculasGeneros[3]['id'];
-var_dump($nombrepelicula);
+$idpelicula = $peliculasGeneros[3]['id'];
+var_dump($idpelicula);
