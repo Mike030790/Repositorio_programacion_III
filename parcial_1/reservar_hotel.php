@@ -21,6 +21,10 @@
 <body>
     <h2>Reservación de Hotel</h2>
     <?php
+
+    define('ARCHIVO_RESERVAS', 'reservas.txt');
+    
+    
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hotel = $_POST['hotel'];
         $nombre = trim($_POST['nombre']);
@@ -42,7 +46,7 @@
             $reserva = "$hotel,$nombre,$apellido,$telefono,$fecha,$observaciones\n";
             
             // Guardar en archivo plano
-            $file = fopen("reservas.txt", "a");
+            $file = fopen(ARCHIVO_RESERVAS, "a");
             if ($file) {
                 fwrite($file, $reserva);
                 fclose($file);
@@ -89,8 +93,8 @@
     
     <h2>Reservas Registradas</h2>
     <?php
-    if (file_exists("reservas.txt")) {
-        $file = fopen("reservas.txt", "r");
+    if (file_exists(ARCHIVO_RESERVAS)) {
+        $file = fopen(ARCHIVO_RESERVAS, "r");
         if ($file) {
             echo "<table border='1'>";
             echo "<tr><th>Hotel</th><th>Nombre</th><th>Apellido</th><th>Teléfono</th><th>Fecha</th><th>Observaciones</th></tr>";
