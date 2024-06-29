@@ -29,11 +29,16 @@
 
         if ($tipo == "Gato") {
             $Animal = new Gato($nombre);
+            $SelectAnimal = $Animal->getNombre();
+            $sonido = $Animal->hacerSonido();
+
         } elseif ($tipo == "Perro") {
             $Animal = new Perro($nombre);
+            $SelectAnimal  = $Animal->getNombre();
+            $sonido = $Animal->hacerSonido();
         }
+        echo "El animal: " .  $SelectAnimal  . " hace: " . $sonido;
 
-        echo "El animal " . $Animal->getNombre() . " hace " . $Animal->hacerSonido();
 
         }
     ?>
