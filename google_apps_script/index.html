@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Botón en movimiento</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --accent: #ff5f6d;
+        --accent-dark: #d83b54;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        color: #f7f7ff;
+        background:
+          radial-gradient(circle at 20% 15%, rgba(109, 94, 252, 0.35), transparent 32rem),
+          radial-gradient(circle at 85% 80%, rgba(255, 95, 109, 0.2), transparent 28rem),
+          #090b19;
+      }
+
+      .panel {
+        width: min(92vw, 760px);
+        padding: clamp(1.4rem, 4vw, 2.6rem);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 28px;
+        text-align: center;
+        background: rgba(18, 20, 42, 0.78);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(18px);
+      }
+
+      .eyebrow {
+        margin: 0 0 0.5rem;
+        color: #aaa7ff;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2rem, 7vw, 4.25rem);
+        line-height: 1;
+        letter-spacing: -0.06em;
+      }
+
+      .intro {
+        max-width: 32rem;
+        margin: 1rem auto 1.5rem;
+        color: #b9bbcf;
+        line-height: 1.6;
+      }
+
+      .playground {
+        position: relative;
+        height: clamp(260px, 48vh, 390px);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+          rgba(4, 6, 20, 0.56);
+        background-size: 24px 24px;
+      }
+
+      #movingButton {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 132px;
+        min-height: 52px;
+        padding: 0.8rem 1.25rem;
+        border: 0;
+        border-radius: 999px;
+        color: white;
+        font: inherit;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+        box-shadow: 0 10px 28px color-mix(in srgb, var(--accent) 36%, transparent);
+        cursor: pointer;
+        user-select: none;
+        will-change: transform;
+        transition: background 180ms ease, box-shadow 180ms ease, scale 100ms ease;
+      }
+
+      #movingButton:active {
+        scale: 0.94;
+      }
+
+      #movingButton:focus-visible {
+        outline: 3px solid white;
+        outline-offset: 4px;
+      }
+
+      .counter {
+        margin: 1rem 0 0;
+        color: #8f91aa;
+        font-size: 0.9rem;
+      }
+
+      #clickCount {
+        color: white;
+        font-weight: 800;
+      }
+
+      @media (max-width: 520px) {
+        .panel {
+          width: calc(100vw - 1.25rem);
+          border-radius: 20px;
+        }
+
+        .playground {
+          height: 52vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="panel">
+      <p class="eyebrow">Desafío interactivo</p>
+      <h1>¡Atrápame!</h1>
+      <p class="intro">El botón nunca deja de moverse. Presiónalo para descubrir un color nuevo.</p>
+
+      <section class="playground" id="playground" aria-label="Zona de movimiento del botón">
+        <button id="movingButton" type="button">Presióname</button>
+      </section>
+
+      <p class="counter" aria-live="polite">
+        Cambios de color: <span id="clickCount">0</span>
+      </p>
+    </main>
+
+    <script>
+      const playground = document.getElementById('playground');
+      const button = document.getElementById('movingButton');
+      const clickCount = document.getElementById('clickCount');
+      const colors = [
+        ['#ff5f6d', '#d83b54'],
+        ['#6d5efc', '#4c38db'],
+        ['#00c9a7', '#009b81'],
+        ['#ff9f43', '#e87514'],
+        ['#19b5fe', '#087ec2'],
+        ['#f24bd6', '#b925a2']
+      ];
+
+      let position = { x: 16, y: 16 };
+      let velocity = { x: 145, y: 105 };
+      let previousTime = performance.now();
+      let colorIndex = 0;
+      let totalClicks = 0;
+
+      function moveButton(currentTime) {
+        const deltaSeconds = Math.min((currentTime - previousTime) / 1000, 0.04);
+        const maxX = Math.max(0, playground.clientWidth - button.offsetWidth);
+        const maxY = Math.max(0, playground.clientHeight - button.offsetHeight);
+
+        position.x += velocity.x * deltaSeconds;
+        position.y += velocity.y * deltaSeconds;
+
+        if (position.x <= 0 || position.x >= maxX) {
+          velocity.x *= -1;
+          position.x = Math.max(0, Math.min(position.x, maxX));
+        }
+
+        if (position.y <= 0 || position.y >= maxY) {
+          velocity.y *= -1;
+          position.y = Math.max(0, Math.min(position.y, maxY));
+        }
+
+        button.style.transform = `translate(${position.x}px, ${position.y}px)`;
+        previousTime = currentTime;
+        requestAnimationFrame(moveButton);
+      }
+
+      button.addEventListener('click', () => {
+        colorIndex = (colorIndex + 1) % colors.length;
+        totalClicks += 1;
+
+        button.style.setProperty('--accent', colors[colorIndex][0]);
+        button.style.setProperty('--accent-dark', colors[colorIndex][1]);
+        clickCount.textContent = totalClicks;
+      });
+
+      window.addEventListener('resize', () => {
+        const maxX = Math.max(0, playground.clientWidth - button.offsetWidth);
+        const maxY = Math.max(0, playground.clientHeight - button.offsetHeight);
+
+        position.x = Math.max(0, Math.min(position.x, maxX));
+        position.y = Math.max(0, Math.min(position.y, maxY));
+      });
+
+      requestAnimationFrame(moveButton);
+    </script>
+  </body>
+</html>
