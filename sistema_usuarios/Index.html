@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sistema de Usuarios</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #f3f4f6; color: #202124; }
+    #pantallaLogin { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+    .login-card { width: 400px; max-width: 100%; background: white; padding: 35px; border-radius: 14px; box-shadow: 0 8px 25px rgba(0,0,0,.12); }
+    h2 { margin-top: 0; }
+    .login-card h2 { text-align: center; margin-bottom: 30px; }
+    label { display: block; margin: 15px 0 7px; font-weight: 600; }
+    input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+    button { border: none; border-radius: 6px; padding: 12px 18px; font-size: 15px; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+    .boton-principal { width: 100%; margin-top: 22px; background: #1a73e8; color: white; }
+    #mensajeLogin { margin-top: 18px; text-align: center; min-height: 20px; }
+    #sistema, #panelAdmin { display: none; }
+    header { background: white; border-bottom: 1px solid #ddd; padding: 18px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .usuario-header { font-size: 14px; color: #555; }
+    .contenedor { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+    .card { background: white; border-radius: 12px; padding: 30px; margin-bottom: 25px; box-shadow: 0 3px 15px rgba(0,0,0,.08); }
+    .titulo-principal { font-size: 36px; text-align: center; margin: 30px 0; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .campo-completo { grid-column: 1 / -1; }
+    .boton-crear { background: #1a73e8; color: white; }
+    .mensaje { margin-top: 20px; min-height: 20px; font-weight: 600; }
+    .logout { background: #e8eaed; color: #333; }
+    .acciones { display: flex; align-items: end; }
+    hr { margin: 35px 0; border: none; border-top: 1px solid #ddd; }
+    @media (max-width: 700px) { .form-grid { grid-template-columns: 1fr; } .titulo-principal { font-size: 25px; } }
+  </style>
+</head>
+<body>
+  <div id="pantallaLogin">
+    <div class="login-card">
+      <h2>Inicio de sesión</h2>
+      <label for="usuario">Usuario</label>
+      <input id="usuario" type="text" autocomplete="username">
+      <label for="password">Contraseña</label>
+      <input id="password" type="password" autocomplete="current-password">
+      <button id="btnLogin" class="boton-principal" type="button" onclick="login()">Ingresar</button>
+      <div id="mensajeLogin" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <div id="sistema">
+    <header>
+      <div>
+        <strong>Sistema</strong>
+        <div class="usuario-header"><span id="nombreUsuario"></span> · <span id="rolUsuario"></span></div>
+      </div>
+      <button class="logout" type="button" onclick="logout()">Cerrar sesión</button>
+    </header>
+
+    <main class="contenedor">
+      <section class="card"><div class="titulo-principal">PARANGARACUTIRIMICUARO</div></section>
+      <section id="panelAdmin" class="card">
+        <h2>Administración de usuarios</h2>
+        <p>Crear nuevo usuario del sistema.</p>
+        <div class="form-grid">
+          <div><label for="nuevoUsuario">Usuario</label><input id="nuevoUsuario" type="text"></div>
+          <div><label for="nuevoNombre">Nombre completo</label><input id="nuevoNombre" type="text"></div>
+          <div><label for="nuevaPassword">Contraseña</label><input id="nuevaPassword" type="password"></div>
+          <div>
+            <label for="nuevoRol">Rol</label>
+            <select id="nuevoRol">
+              <option value="USUARIO">Usuario</option>
+              <option value="SUPERVISOR">Supervisor</option>
+              <option value="ADMINISTRADOR">Administrador</option>
+            </select>
+          </div>
+          <div class="campo-completo"><button class="boton-crear" type="button" onclick="registrarUsuario()">Crear usuario</button></div>
+        </div>
+        <div id="mensajeUsuario" class="mensaje" aria-live="polite"></div>
+
+        <hr>
+        <h2>Cambiar contraseña</h2>
+        <p>Actualizar la contraseña de un usuario registrado.</p>
+        <div class="form-grid">
+          <div><label for="usuarioPassword">Usuario</label><input id="usuarioPassword" type="text" placeholder="Ejemplo: mauricio"></div>
+          <div><label for="nuevaPasswordCambio">Nueva contraseña</label><input id="nuevaPasswordCambio" type="password"></div>
+          <div><label for="confirmarPasswordCambio">Confirmar contraseña</label><input id="confirmarPasswordCambio" type="password"></div>
+          <div class="acciones"><button id="btnCambiarPassword" class="boton-crear" type="button" onclick="cambiarPasswordUsuario()">Actualizar contraseña</button></div>
+        </div>
+        <div id="mensajePassword" class="mensaje" aria-live="polite"></div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    let TOKEN_SESION = null;
+
+    function mostrarMensaje(elemento, texto, color) {
+      elemento.style.color = color;
+      elemento.textContent = texto;
+    }
+
+    function login() {
+      const usuario = document.getElementById("usuario").value.trim();
+      const password = document.getElementById("password").value;
+      const mensaje = document.getElementById("mensajeLogin");
+      const boton = document.getElementById("btnLogin");
+
+      if (!usuario || !password) {
+        mostrarMensaje(mensaje, "Ingrese usuario y contraseña.", "red");
+        return;
+      }
+
+      boton.disabled = true;
+      mostrarMensaje(mensaje, "Verificando...", "#555");
+      google.script.run
+        .withSuccessHandler(function (resultado) {
+          boton.disabled = false;
+          if (!resultado.exito) {
+            mostrarMensaje(mensaje, resultado.mensaje, "red");
+            return;
+          }
+
+          TOKEN_SESION = resultado.token;
+          document.getElementById("pantallaLogin").style.display = "none";
+          document.getElementById("sistema").style.display = "block";
+          document.getElementById("nombreUsuario").textContent = resultado.nombre;
+          document.getElementById("rolUsuario").textContent = resultado.rol;
+          document.getElementById("panelAdmin").style.display =
+            resultado.rol === "ADMINISTRADOR" ? "block" : "none";
+        })
+        .withFailureHandler(function (error) {
+          boton.disabled = false;
+          mostrarMensaje(mensaje, "Error: " + error.message, "red");
+        })
+        .iniciarSesion(usuario, password);
+    }
+
+    function registrarUsuario() {
+      const usuario = document.getElementById("nuevoUsuario").value.trim();
+      const nombre = document.getElementById("nuevoNombre").value.trim();
+      const password = document.getElementById("nuevaPassword").value;
+      const rol = document.getElementById("nuevoRol").value;
+      const mensaje = document.getElementById("mensajeUsuario");
+
+      mostrarMensaje(mensaje, "Creando usuario...", "#555");
+      google.script.run
+        .withSuccessHandler(function (resultado) {
+          mostrarMensaje(mensaje, resultado.mensaje, resultado.exito ? "green" : "red");
+          if (resultado.exito) {
+            document.getElementById("nuevoUsuario").value = "";
+            document.getElementById("nuevoNombre").value = "";
+            document.getElementById("nuevaPassword").value = "";
+            document.getElementById("nuevoRol").value = "USUARIO";
+          }
+        })
+        .withFailureHandler(function (error) {
+          mostrarMensaje(mensaje, "Error: " + error.message, "red");
+        })
+        .crearUsuario(TOKEN_SESION, usuario, password, nombre, rol);
+    }
+
+    function cambiarPasswordUsuario() {
+      const usuario = document.getElementById("usuarioPassword").value.trim();
+      const nuevaPassword = document.getElementById("nuevaPasswordCambio").value;
+      const confirmacion = document.getElementById("confirmarPasswordCambio").value;
+      const mensaje = document.getElementById("mensajePassword");
+      const boton = document.getElementById("btnCambiarPassword");
+
+      if (!usuario) {
+        mostrarMensaje(mensaje, "Debe indicar el usuario.", "red");
+        return;
+      }
+      if (nuevaPassword.length < 6) {
+        mostrarMensaje(mensaje, "La nueva contraseña debe tener al menos 6 caracteres.", "red");
+        return;
+      }
+      if (nuevaPassword !== confirmacion) {
+        mostrarMensaje(mensaje, "Las contraseñas no coinciden.", "red");
+        return;
+      }
+
+      boton.disabled = true;
+      mostrarMensaje(mensaje, "Actualizando contraseña...", "#555");
+      google.script.run
+        .withSuccessHandler(function (resultado) {
+          boton.disabled = false;
+          mostrarMensaje(mensaje, resultado.mensaje, resultado.exito ? "green" : "red");
+          if (resultado.exito) {
+            document.getElementById("usuarioPassword").value = "";
+            document.getElementById("nuevaPasswordCambio").value = "";
+            document.getElementById("confirmarPasswordCambio").value = "";
+          }
+        })
+        .withFailureHandler(function (error) {
+          boton.disabled = false;
+          mostrarMensaje(mensaje, "Error: " + error.message, "red");
+        })
+        .cambiarPassword(TOKEN_SESION, usuario, nuevaPassword);
+    }
+
+    function logout() {
+      google.script.run.cerrarSesion(TOKEN_SESION);
+      TOKEN_SESION = null;
+      location.reload();
+    }
+
+    document.getElementById("password").addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        login();
+      }
+    });
+  </script>
+</body>
+</html>
