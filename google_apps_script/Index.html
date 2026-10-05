@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 20% 20%, rgb(250 204 21 / 18%), transparent 32%),
+          radial-gradient(circle at 80% 80%, rgb(249 115 22 / 16%), transparent 34%),
+          #111827;
+        color: #f9fafb;
+      }
+
+      main {
+        width: min(90%, 900px);
+        padding: clamp(2rem, 7vw, 5rem);
+        border: 1px solid rgb(255 255 255 / 14%);
+        border-radius: 1.5rem;
+        background: rgb(17 24 39 / 72%);
+        box-shadow: 0 2rem 5rem rgb(0 0 0 / 35%);
+        text-align: center;
+        backdrop-filter: blur(12px);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.25rem, 7vw, 5.5rem);
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+        text-wrap: balance;
+      }
+
+      .nombre {
+        display: block;
+        margin-bottom: 0.3em;
+        color: #facc15;
+      }
+
+      .detalle {
+        display: block;
+        font-size: 0.48em;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .control-musica {
+        margin-top: 2rem;
+        padding: 0.75rem 1.25rem;
+        border: 1px solid rgb(255 255 255 / 25%);
+        border-radius: 999px;
+        background: rgb(255 255 255 / 10%);
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .control-musica:hover,
+      .control-musica:focus-visible {
+        background: rgb(255 255 255 / 18%);
+      }
+
+      .reproductor {
+        position: fixed;
+        width: 1px;
+        height: 1px;
+        border: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>
+        <span class="nombre">CHACÓN,</span>
+        <span class="detalle">MANDAME EL CORTE ÉLITE</span>
+      </h1>
+      <button class="control-musica" id="control-musica" type="button">
+        Reproducir música
+      </button>
+    </main>
+
+    <div class="reproductor" id="reproductor" aria-hidden="true"></div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+      const youtubeVideoId = <?!= youtubeVideoIdJson ?>;
+      const control = document.querySelector('#control-musica');
+      let player;
+
+      function onYouTubeIframeAPIReady() {
+        if (!youtubeVideoId) {
+          control.textContent = 'Configura el enlace de YouTube';
+          control.disabled = true;
+          return;
+        }
+
+        player = new YT.Player('reproductor', {
+          videoId: youtubeVideoId,
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            loop: 1,
+            playlist: youtubeVideoId
+          },
+          events: {
+            onReady(event) {
+              event.target.playVideo();
+            },
+            onStateChange(event) {
+              if (event.data === YT.PlayerState.PLAYING) {
+                control.textContent = 'Pausar música';
+              }
+            }
+          }
+        });
+      }
+
+      control.addEventListener('click', () => {
+        if (!player || typeof player.getPlayerState !== 'function') return;
+
+        if (player.getPlayerState() === YT.PlayerState.PLAYING) {
+          player.pauseVideo();
+          control.textContent = 'Reproducir música';
+        } else {
+          player.playVideo();
+          control.textContent = 'Pausar música';
+        }
+      });
+    </script>
+  </body>
+</html>
