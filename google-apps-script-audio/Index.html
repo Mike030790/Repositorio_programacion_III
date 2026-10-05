@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        display: grid;
+        min-height: 100vh;
+        margin: 0;
+        place-items: center;
+        background: #f0f2f5;
+      }
+
+      button {
+        padding: 1rem 1.5rem;
+        border: 0;
+        border-radius: 999px;
+        background: #25d366;
+        color: #073b1a;
+        font-size: 1.1rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 0.35rem 1rem rgb(0 0 0 / 18%);
+        transition: transform 150ms ease, background 150ms ease;
+      }
+
+      button:hover {
+        background: #20bd5a;
+        transform: translateY(-2px);
+      }
+
+      button:focus-visible {
+        outline: 3px solid #075e54;
+        outline-offset: 4px;
+      }
+
+      button:disabled {
+        cursor: wait;
+        opacity: 0.7;
+        transform: none;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="playButton" type="button">Presionar para escuchar</button>
+
+    <script>
+      const playButton = document.querySelector('#playButton');
+      let audio;
+
+      playButton.addEventListener('click', () => {
+        if (audio) {
+          reproducirAudio();
+          return;
+        }
+
+        playButton.disabled = true;
+        playButton.textContent = 'Cargando audio…';
+
+        google.script.run
+          .withSuccessHandler(({ data, mimeType }) => {
+            audio = new Audio(`data:${mimeType};base64,${data}`);
+            audio.addEventListener('ended', restaurarBoton);
+            reproducirAudio();
+          })
+          .withFailureHandler((error) => {
+            console.error(error);
+            playButton.disabled = false;
+            playButton.textContent = 'No se pudo cargar. Reintentar';
+          })
+          .obtenerAudio();
+      });
+
+      function reproducirAudio() {
+        audio.currentTime = 0;
+        audio.play()
+          .then(() => {
+            playButton.disabled = true;
+            playButton.textContent = 'Reproduciendo…';
+          })
+          .catch((error) => {
+            console.error(error);
+            restaurarBoton();
+          });
+      }
+
+      function restaurarBoton() {
+        playButton.disabled = false;
+        playButton.textContent = 'Presionar para escuchar';
+      }
+    </script>
+  </body>
+</html>
