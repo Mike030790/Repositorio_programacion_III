@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 20% 20%, rgb(250 204 21 / 18%), transparent 32%),
+          radial-gradient(circle at 80% 80%, rgb(249 115 22 / 16%), transparent 34%),
+          #111827;
+        color: #f9fafb;
+      }
+
+      main {
+        width: min(90%, 900px);
+        padding: clamp(2rem, 7vw, 5rem);
+        border: 1px solid rgb(255 255 255 / 14%);
+        border-radius: 1.5rem;
+        background: rgb(17 24 39 / 72%);
+        box-shadow: 0 2rem 5rem rgb(0 0 0 / 35%);
+        text-align: center;
+        backdrop-filter: blur(12px);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.25rem, 7vw, 5.5rem);
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+        text-wrap: balance;
+      }
+
+      .nombre {
+        display: block;
+        margin-bottom: 0.3em;
+        color: #facc15;
+      }
+
+      .detalle {
+        display: block;
+        font-size: 0.48em;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>
+        <span class="nombre">CHACÓN,</span>
+        <span class="detalle">MANDAME EL CORTE ÉLITE</span>
+      </h1>
+    </main>
+  </body>
+</html>
