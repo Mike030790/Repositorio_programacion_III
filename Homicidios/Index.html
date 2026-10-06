@@ -38,756 +38,36 @@
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
   >
 
+ <?!= HtmlService.createHtmlOutputFromFile('styles').getContent(); ?>
 
-  <style>
-
-    :root {
-      --ink:#19322c;
-      --forest:#173c34;
-      --sage:#68867d;
-      --cream:#f5f1e9;
-      --paper:#fffdf9;
-      --terracotta:#b5653e;
-      --danger:#9f3b35;
-      --line:#dedbd2;
-      --muted:#6d7773;
-      --shadow:0 20px 55px rgba(23,60,52,.12);
-    }
-
-
-    * {
-      box-sizing:border-box;
-    }
-
-
-    body {
-      margin:0;
-      background:var(--cream);
-      color:var(--ink);
-      font-family:'DM Sans',sans-serif;
-    }
-
-
-    button,
-    input,
-    select,
-    textarea {
-      font:inherit;
-    }
-
-
-    button {
-      cursor:pointer;
-    }
-
-
-    /* =====================================================
-       ESTRUCTURA GENERAL
-    ===================================================== */
-
-    .shell {
-      display:grid;
-      grid-template-columns:420px 1fr;
-      min-height:100vh;
-    }
-
-
-    .rail {
-      padding:30px 28px;
-      background:var(--forest);
-      color:#fff;
-      position:relative;
-      overflow:hidden;
-    }
-
-
-    .rail:after {
-      content:'';
-      position:absolute;
-      width:280px;
-      height:280px;
-      border:1px solid rgba(255,255,255,.09);
-      border-radius:50%;
-      right:-130px;
-      top:120px;
-    }
-
-
-    .brand {
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-weight:700;
-      letter-spacing:.02em;
-    }
-
-
-    .brand-mark {
-      display:grid;
-      place-items:center;
-      width:38px;
-      height:38px;
-      border:1px solid rgba(255,255,255,.3);
-      border-radius:50%;
-      font-size:17px;
-    }
-
-
-    .eyebrow {
-      margin:68px 0 14px;
-      color:#d3a282;
-      font-size:11px;
-      font-weight:700;
-      letter-spacing:.19em;
-      text-transform:uppercase;
-    }
-
-
-    .rail h1 {
-      font:600 43px/1.04 'Playfair Display',serif;
-      margin:0;
-      max-width:340px;
-    }
-
-
-    .rail .intro {
-      color:#bed0ca;
-      line-height:1.65;
-      margin:22px 0 32px;
-      max-width:335px;
-    }
-
-
-    .stats {
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-
-
-    .stat {
-      padding:18px;
-      border-top:1px solid rgba(255,255,255,.19);
-    }
-
-
-    .stat strong {
-      display:block;
-      font:600 28px 'Playfair Display',serif;
-    }
-
-
-    .stat span {
-      color:#a9c0b9;
-      font-size:12px;
-    }
-
-
-    .privacy {
-      position:absolute;
-      bottom:28px;
-      left:28px;
-      right:28px;
-      color:#8eaaa2;
-      font-size:11px;
-      line-height:1.5;
-    }
-
-
-    .content {
-      padding:28px 34px 50px;
-      min-width:0;
-    }
-
-
-    .topbar {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-bottom:24px;
-    }
-
-
-    .topbar h2 {
-      font:600 27px 'Playfair Display',serif;
-      margin:0;
-    }
-
-
-    .actions {
-      display:flex;
-      gap:10px;
-    }
-
-
-    /* =====================================================
-       BOTONES
-    ===================================================== */
-
-    .btn {
-      border:0;
-      border-radius:9px;
-      padding:11px 15px;
-      font-weight:700;
-      font-size:13px;
-    }
-
-
-    .btn-primary {
-      background:var(--terracotta);
-      color:#fff;
-      box-shadow:0 8px 18px rgba(181,101,62,.25);
-    }
-
-
-    .btn-light {
-      background:var(--paper);
-      color:var(--ink);
-      border:1px solid var(--line);
-    }
-
-
-    .btn-danger {
-      background:var(--danger);
-      color:#fff;
-      border:1px solid var(--danger);
-    }
-
-
-    .btn-danger:hover {
-      background:#84302c;
-    }
-
-
-    /* =====================================================
-       FILTROS
-    ===================================================== */
-
-    .filters {
-      display:grid;
-      grid-template-columns:1.4fr repeat(2,1fr);
-      gap:10px;
-      margin-bottom:18px;
-    }
-
-
-    .field {
-      position:relative;
-    }
-
-
-    .field input,
-    .field select,
-    .form-field input,
-    .form-field select,
-    .form-field textarea {
-      width:100%;
-      border:1px solid var(--line);
-      border-radius:8px;
-      background:var(--paper);
-      padding:11px 12px;
-      color:var(--ink);
-      outline:none;
-    }
-
-
-    .field input:focus,
-    .field select:focus,
-    .form-field input:focus,
-    .form-field select:focus,
-    .form-field textarea:focus {
-      border-color:var(--sage);
-      box-shadow:0 0 0 3px rgba(104,134,125,.12);
-    }
-
-
-    /* =====================================================
-       ÁREA DE TRABAJO
-    ===================================================== */
-
-    .workspace {
-      display:grid;
-      grid-template-columns:minmax(440px,.9fr) minmax(400px,1.25fr);
-      gap:18px;
-    }
-
-
-    .panel {
-      background:var(--paper);
-      border:1px solid var(--line);
-      border-radius:15px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-
-    .panel-head {
-      padding:18px 20px;
-      border-bottom:1px solid var(--line);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-
-    .panel-head h3 {
-      font-size:14px;
-      margin:0;
-    }
-
-
-    .count {
-      color:var(--muted);
-      font-size:12px;
-    }
-
-
-    /* =====================================================
-       FICHAS
-    ===================================================== */
-
-    .records {
-      height:610px;
-      overflow:auto;
-    }
-
-
-    .empty {
-      padding:60px 28px;
-      text-align:center;
-      color:var(--muted);
-    }
-
-
-    .record {
-      display:grid;
-      grid-template-columns:86px minmax(0,1fr) 120px;
-      gap:15px;
-      padding:16px 18px;
-      border-bottom:1px solid #ebe8e1;
-      cursor:pointer;
-      transition:.2s;
-      align-items:center;
-    }
-
-
-    .record:hover,
-    .record.active {
-      background:#f2eee6;
-    }
-
-
-    .thumb {
-      width:86px;
-      height:92px;
-      object-fit:cover;
-      background:#dce4e0;
-      border-radius:8px;
-    }
-
-
-    .record-info {
-      min-width:0;
-    }
-
-
-    .record h4 {
-      margin:2px 0 6px;
-      font:600 17px 'Playfair Display',serif;
-      overflow-wrap:anywhere;
-    }
-
-
-    .meta {
-      color:var(--muted);
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.07em;
-    }
-
-
-    .place {
-      font-size:12px;
-      margin-top:8px;
-      overflow-wrap:anywhere;
-    }
-
-
-    .record-buttons {
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      justify-self:end;
-      align-items:stretch;
-    }
-
-
-    .record-buttons .btn {
-      width:120px;
-      padding:8px 10px;
-      font-size:12px;
-    }
-
-
-    /* =====================================================
-       MAPA
-    ===================================================== */
-
-    .map-panel {
-      position:relative;
-    }
-
-
-    .map {
-      height:610px;
-    }
-
-
-    .location-pin {
-      width:28px;
-      height:28px;
-      background:#d93025;
-      border:3px solid #fff;
-      border-radius:50% 50% 50% 0;
-      box-shadow:0 2px 7px rgba(0,0,0,.4);
-      transform:rotate(-45deg);
-    }
-
-
-    .location-pin:after {
-      content:'';
-      position:absolute;
-      width:8px;
-      height:8px;
-      left:7px;
-      top:7px;
-      border-radius:50%;
-      background:#fff;
-    }
-
-
-    .map-overlay {
-      position:absolute;
-      left:18px;
-      right:18px;
-      bottom:18px;
-      z-index:500;
-      background:rgba(255,253,249,.96);
-      border-radius:11px;
-      padding:15px 17px;
-      box-shadow:0 8px 30px rgba(17,41,35,.18);
-      display:none;
-    }
-
-
-    .map-overlay.show {
-      display:block;
-    }
-
-
-    .map-overlay h4 {
-      margin:0 0 5px;
-      font-family:'Playfair Display',serif;
-    }
-
-
-    .map-overlay p {
-      margin:0;
-      color:var(--muted);
-      font-size:12px;
-    }
-
-
-    /* =====================================================
-       MODAL
-    ===================================================== */
-
-    .modal {
-      position:fixed;
-      inset:0;
-      background:rgba(13,31,27,.63);
-      z-index:1000;
-      display:none;
-      padding:24px;
-      overflow:auto;
-    }
-
-
-    .modal.show {
-      display:grid;
-      place-items:center;
-    }
-
-
-    .dialog {
-      width:min(850px,100%);
-      background:var(--paper);
-      border-radius:16px;
-      box-shadow:0 30px 90px rgba(0,0,0,.25);
-    }
-
-
-    .dialog-head {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:20px 24px;
-      border-bottom:1px solid var(--line);
-    }
-
-
-    .dialog-head h3 {
-      margin:0;
-      font:600 23px 'Playfair Display',serif;
-    }
-
-
-    .close {
-      border:0;
-      background:transparent;
-      font-size:24px;
-      color:var(--muted);
-    }
-
-
-    form {
-      padding:22px 24px;
-    }
-
-
-    .form-grid {
-      display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:15px;
-    }
-
-
-    .form-field label {
-      display:block;
-      font-size:11px;
-      font-weight:700;
-      letter-spacing:.06em;
-      text-transform:uppercase;
-      margin-bottom:7px;
-    }
-
-
-    .form-field.full {
-      grid-column:1/-1;
-    }
-
-
-    .form-field textarea {
-      min-height:90px;
-      resize:vertical;
-    }
-
-
-    .victim-row {
-      display:flex;
-      gap:8px;
-      margin-bottom:7px;
-    }
-
-    .photo-drop {
-      display:flex !important;
-      align-items:center;
-      gap:14px;
-      border:1px dashed #aab8b3;
-      border-radius:9px;
-      padding:14px;
-      background:#f8f6f0;
-      cursor:pointer;
-    }
-
-
-    .photo-preview {
-      width:72px;
-      height:60px;
-      border-radius:7px;
-      object-fit:cover;
-      display:none;
-    }
-
-
-    .dialog-actions {
-      display:flex;
-      justify-content:flex-end;
-      gap:10px;
-      padding-top:20px;
-    }
-
-
-    /* =====================================================
-       TOAST / CARGA
-    ===================================================== */
-
-    .toast {
-      position:fixed;
-      right:28px;
-      top:28px;
-      z-index:2000;
-      background:var(--ink);
-      color:#fff;
-      padding:13px 17px;
-      border-radius:8px;
-      box-shadow:var(--shadow);
-      transform:translateY(-80px);
-      opacity:0;
-      transition:.25s;
-    }
-
-
-    .toast.show {
-      transform:none;
-      opacity:1;
-    }
-
-
-    .loader {
-      opacity:.55;
-      pointer-events:none;
-    }
-
-
-    /* =====================================================
-       RESPONSIVE
-    ===================================================== */
-
-    @media(max-width:1050px) {
-
-      .shell {
-        grid-template-columns:1fr;
-      }
-
-      .rail {
-        padding:25px 28px;
-      }
-
-      .rail .eyebrow {
-        margin-top:35px;
-      }
-
-      .rail h1 {
-        font-size:36px;
-      }
-
-      .privacy {
-        display:none;
-      }
-
-      .workspace {
-        grid-template-columns:1fr;
-      }
-
-      .records {
-        height:400px;
-      }
-
-      .map {
-        height:480px;
-      }
-    }
-
-
-    @media(max-width:650px) {
-
-      .content {
-        padding:22px 15px;
-      }
-
-      .topbar {
-        align-items:flex-start;
-        gap:15px;
-      }
-
-      .actions {
-        flex-direction:column;
-      }
-
-      .filters,
-      .form-grid {
-        grid-template-columns:1fr;
-      }
-
-      .form-field.full {
-        grid-column:auto;
-      }
-
-      .workspace {
-        display:flex;
-        flex-direction:column;
-      }
-
-      .map-panel {
-        order:-1;
-      }
-
-      .map {
-        height:420px;
-      }
-
-      .modal {
-        padding:8px;
-      }
-
-      .rail h1 {
-        font-size:32px;
-      }
-
-      .record {
-        grid-template-columns:72px minmax(0,1fr);
-      }
-
-      .thumb {
-        width:72px;
-        height:82px;
-      }
-
-      .record-buttons {
-        grid-column:1/-1;
-        width:100%;
-        flex-direction:row;
-      }
-
-      .record-buttons .btn {
-        width:auto;
-        flex:1;
-      }
-    }
-    /* =====================================================
-      BOTÓN MI UBICACIÓN DEL MAPA
-      ===================================================== */
-      .location-control {
-        background:#fff;
-        width:38px;
-       height:38px;
-       border:0;
-       border-radius:6px;
-       box-shadow:0 1px 5px rgba(0,0,0,.35);
-       display:flex;
-       align-items:center;
-       justify-content:center;
-       cursor:pointer;
-       font-size:20px;
-       color:#173c34;
-      }
-
-      .location-control:hover {
-        background:#f4f1ea;
-      }
-
-      .location-control.locating {
-        opacity:.55;
-        pointer-events:none;
-      }
-
-  </style>
 
 </head>
 
 
-<body>
+<body class="auth-loading">
+
+  <div
+  class="access-denied"
+  id="accessDenied"
+>
+
+  <div class="access-denied-card">
+
+    <div class="access-denied-icon">
+      🔒
+    </div>
+
+    <h2>
+      Acceso no autorizado
+    </h2>
+
+    <p id="accessDeniedText">
+      Esta cuenta no está autorizada para utilizar la aplicación.
+    </p>
+
+  </div>
+
+</div>
 
 
 <main class="shell">
@@ -828,7 +108,7 @@
     </div>
 
     <p class="privacy">
-      Los registros se almacenan localmente en este navegador.
+      Los registros se almacenan de forma centralizada.
       Las fotografías se conservan en Google Drive.
     </p>
 
@@ -851,6 +131,12 @@
           id="updated"
         >
           Cargando registros…
+        </span>
+
+        <span
+        class="user-badge"
+        id="userBadge"
+        >
         </span>
 
       </div>
@@ -1242,9 +528,6 @@
    CONFIGURACIÓN
 ========================================================= */
 
-const STORAGE_KEY =
-  'hatillo_registro_visual_hechos_v1';
-
 const DEFAULT_CENTER = {
   lat:9.9146,
   lng:-84.1036
@@ -1266,7 +549,9 @@ const state = {
   selected:null,
 
   editingId:null,
-
+  
+  user:null,
+  
   map:null,
 
   pendingLocation:null,
@@ -1303,89 +588,6 @@ const esc =
 /* =========================================================
    LOCALSTORAGE
 ========================================================= */
-
-function loadLocalRecords() {
-
-  try {
-
-    const raw =
-      localStorage.getItem(
-        STORAGE_KEY
-      );
-
-    if (!raw) {
-
-      state.records = [];
-
-      return;
-    }
-
-    const parsed =
-      JSON.parse(raw);
-
-    state.records =
-      Array.isArray(parsed)
-        ? parsed
-        : [];
-
-  } catch (err) {
-
-    console.error(
-      'Error leyendo localStorage:',
-      err
-    );
-
-    state.records = [];
-
-    toast(
-      'No fue posible recuperar los registros almacenados.'
-    );
-  }
-}
-
-
-function saveLocalRecords() {
-
-  try {
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(
-        state.records
-      )
-    );
-
-  } catch (err) {
-
-    console.error(
-      'Error guardando localStorage:',
-      err
-    );
-
-    throw new Error(
-      'No fue posible guardar los datos en el almacenamiento local.'
-    );
-  }
-
-  updateStorageText();
-}
-
-
-function updateStorageText() {
-
-  $('updated').textContent =
-    state.records.length
-      ? (
-          'Guardado localmente · ' +
-          state.records.length +
-          (
-            state.records.length === 1
-              ? ' registro'
-              : ' registros'
-          )
-        )
-      : 'Sin registros almacenados';
-}
 
 
 /* =========================================================
@@ -1789,21 +991,220 @@ function clearPendingLocation() {
 /* =========================================================
    CARGA INICIAL
 ========================================================= */
+/* =========================================================
+   INTERFAZ SEGÚN ROL
+========================================================= */
+
+function applyRoleUI() {
+
+  document.body.classList.remove(
+    'auth-loading',
+    'role-admin',
+    'role-official'
+  );
+
+
+  if (
+    !state.user ||
+    !state.user.authorized
+  ) {
+
+    showAccessDenied(
+      state.user
+    );
+
+    return false;
+  }
+
+
+  if (
+    state.user.rol === 'ADMIN'
+  ) {
+
+    document.body.classList.add(
+      'role-admin'
+    );
+
+  } else {
+
+    document.body.classList.add(
+      'role-official'
+    );
+
+  }
+
+
+  $('userBadge').textContent =
+    state.user.nombre +
+    ' · ' +
+    state.user.rol;
+
+
+  return true;
+}
+
+
+
+function showAccessDenied(user) {
+
+  document.body.classList.remove(
+    'auth-loading'
+  );
+
+
+  document.body.classList.add(
+    'role-denied'
+  );
+
+
+  let message =
+    'Esta cuenta no está autorizada para utilizar la aplicación.';
+
+
+  if (
+    user &&
+    user.reason === 'NO_EMAIL'
+  ) {
+
+    message =
+      'No fue posible identificar la cuenta de Google utilizada para ingresar.';
+
+  }
+
+
+  if (
+    user &&
+    user.reason === 'NOT_REGISTERED'
+  ) {
+
+    message =
+      'La cuenta ' +
+      user.email +
+      ' no se encuentra registrada como usuario de la aplicación.';
+
+  }
+
+
+  if (
+    user &&
+    user.reason === 'INACTIVE'
+  ) {
+
+    message =
+      'Este usuario se encuentra desactivado.';
+
+  }
+
+
+  $('accessDeniedText').textContent =
+    message;
+
+
+  $('accessDenied')
+    .classList
+    .add('show');
+
+}
 
 function load() {
 
-  loadLocalRecords();
+  busy(true);
 
-  applyFilters();
 
-  updateStorageText();
+  google.script.run
 
-  setTimeout(
-    () => {
-      state.map.invalidateSize();
-    },
-    100
-  );
+    .withSuccessHandler(
+      data => {
+
+        /*
+         * Usuario recibido desde servidor.
+         */
+        state.user =
+          data.user ||
+          null;
+
+
+        /*
+         * Aplicar ADMIN / OFICIAL.
+         */
+        if (
+          !data.authorized ||
+          !applyRoleUI()
+        ) {
+
+          busy(false);
+
+          return;
+        }
+
+
+        state.records =
+          Array.isArray(
+            data.records
+          )
+            ? data.records
+            : [];
+
+
+        applyFilters();
+
+
+        if (
+          state.user.rol === 'ADMIN'
+        ) {
+
+          $('updated').textContent =
+            state.records.length
+              ? (
+                  'Base central · ' +
+                  state.records.length +
+                  (
+                    state.records.length === 1
+                      ? ' registro'
+                      : ' registros'
+                  )
+                )
+              : 'Sin registros almacenados';
+
+        } else {
+
+          $('updated').textContent =
+            'Captura de información en campo';
+
+        }
+
+
+        busy(false);
+
+
+        setTimeout(
+          () => {
+
+            state.map.invalidateSize();
+
+          },
+          150
+        );
+
+      }
+    )
+
+    .withFailureHandler(
+      err => {
+
+        busy(false);
+
+        document.body.classList.remove(
+          'auth-loading'
+        );
+
+        error(err);
+
+      }
+    )
+
+    .getBootstrapData();
+
 }
 
 
@@ -2047,6 +1448,33 @@ function card(r) {
         `;
 
 
+  const buttons =
+    state.user &&
+    state.user.rol === 'ADMIN'
+      ? `
+          <div class="record-buttons">
+
+            <button
+              type="button"
+              class="btn btn-light edit-btn"
+              data-id="${esc(r.id)}"
+            >
+              ✎ Editar
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-danger delete-btn"
+              data-id="${esc(r.id)}"
+            >
+              🗑 Eliminar
+            </button>
+
+          </div>
+        `
+      : '';
+
+
   return `
     <article
       class="record ${state.selected === r.id ? 'active' : ''}"
@@ -2075,25 +1503,8 @@ function card(r) {
       </div>
 
 
-      <div class="record-buttons">
+      ${buttons}
 
-        <button
-          type="button"
-          class="btn btn-light edit-btn"
-          data-id="${esc(r.id)}"
-        >
-          ✎ Editar
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-danger delete-btn"
-          data-id="${esc(r.id)}"
-        >
-          🗑 Eliminar
-        </button>
-
-      </div>
 
     </article>
   `;
@@ -2571,13 +1982,100 @@ function generateId() {
 /* =========================================================
    GUARDAR / ACTUALIZAR
 ========================================================= */
+function saveRecordToSheet(record) {
+
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+
+      google.script.run
+
+        .withSuccessHandler(
+          result => {
+
+            resolve(
+              result
+            );
+
+          }
+        )
+
+        .withFailureHandler(
+          err => {
+
+            reject(
+              new Error(
+                err.message ||
+                String(err)
+              )
+            );
+
+          }
+        )
+
+        .saveRecord(
+          record
+        );
+
+    }
+  );
+
+}
+
+
+
+function deleteRecordFromSheet(id) {
+
+  return new Promise(
+    (
+      resolve,
+      reject
+    ) => {
+
+      google.script.run
+
+        .withSuccessHandler(
+          result => {
+
+            resolve(
+              result
+            );
+
+          }
+        )
+
+        .withFailureHandler(
+          err => {
+
+            reject(
+              new Error(
+                err.message ||
+                String(err)
+              )
+            );
+
+          }
+        )
+
+        .deleteRecord(
+          id
+        );
+
+    }
+  );
+
+}
 
 async function submit(e) {
 
   e.preventDefault();
 
 
-  if (!state.pendingLocation) {
+  if (
+    !state.pendingLocation
+  ) {
 
     toast(
       'Seleccione primero la ubicación en el mapa.'
@@ -2600,10 +2098,12 @@ async function submit(e) {
     .filter(Boolean);
 
 
-  if (!victims.length) {
+  if (
+    !victims.length
+  ) {
 
     toast(
-      'Ingrese al menos una víctima.'
+      'Ingrese una víctima.'
     );
 
     return;
@@ -2613,21 +2113,19 @@ async function submit(e) {
   const editingRecord =
     state.editingId
       ? state.records.find(
-          r =>
-            r.id === state.editingId
+          record =>
+            record.id ===
+            state.editingId
         )
       : null;
 
 
-  const backup =
-    state.records.map(
-      r => ({...r})
-    );
-
-
   let uploadedPhoto = {
+
     id:'',
+
     url:''
+
   };
 
 
@@ -2712,6 +2210,7 @@ async function submit(e) {
 
       modificado:
         new Date().toISOString()
+
     };
 
 
@@ -2727,69 +2226,55 @@ async function submit(e) {
       throw new Error(
         'La ubicación seleccionada no es válida.'
       );
+
     }
 
 
-    if (editingRecord) {
+    /*
+     * GUARDAR EN GOOGLE SHEETS
+     */
+    const savedRecord =
+      await saveRecordToSheet(
+        record
+      );
+
+
+    /*
+     * Actualizar estado visual.
+     */
+    if (
+      editingRecord
+    ) {
 
       const index =
         state.records.findIndex(
-          r =>
-            r.id ===
+          item =>
+            item.id ===
             editingRecord.id
         );
 
 
-      if (index === -1) {
+      if (
+        index !== -1
+      ) {
 
-        throw new Error(
-          'No se encontró el registro que desea editar.'
-        );
+        state.records[index] =
+          savedRecord;
+
       }
-
-
-      state.records[index] =
-        record;
 
     } else {
 
       state.records.unshift(
-        record
+        savedRecord
       );
+
     }
 
 
     /*
-     * Guardamos los cambios.
-     */
-    try {
-
-      saveLocalRecords();
-
-    } catch (storageError) {
-
-      state.records =
-        backup;
-
-
-      /*
-       * Si se creó una fotografía nueva y luego
-       * falló localStorage, la eliminamos.
-       */
-      if (uploadedPhoto.id) {
-
-        deletePhotoFromDrive(
-          uploadedPhoto.id
-        );
-      }
-
-      throw storageError;
-    }
-
-
-    /*
-     * Si estamos editando y se cambió la foto,
-     * eliminamos de Drive la fotografía anterior.
+     * Si se editó y cambió la foto,
+     * eliminar la fotografía antigua.
      */
     if (
       editingRecord &&
@@ -2802,20 +2287,25 @@ async function submit(e) {
       deletePhotoFromDrive(
         editingRecord.fotoId
       );
+
     }
 
 
     const wasEditing =
-      Boolean(editingRecord);
+      Boolean(
+        editingRecord
+      );
 
 
     $('modal')
       .classList
       .remove('show');
 
+
     resetFormVisuals();
 
     clearPendingLocation();
+
 
     state.editingId =
       null;
@@ -2824,20 +2314,28 @@ async function submit(e) {
     applyFilters();
 
 
-    /*
-     * Dejamos seleccionada la ficha recién
-     * guardada o modificada.
-     */
+    $('updated').textContent =
+      'Base central · ' +
+      state.records.length +
+      (
+        state.records.length === 1
+          ? ' registro'
+          : ' registros'
+      );
+
+
     if (
       state.filtered.some(
-        r =>
-          r.id === record.id
+        item =>
+          item.id ===
+          savedRecord.id
       )
     ) {
 
       selectRecord(
-        record.id
+        savedRecord.id
       );
+
     }
 
 
@@ -2850,12 +2348,30 @@ async function submit(e) {
         : 'Registro guardado correctamente.'
     );
 
+
   } catch (err) {
+
+    /*
+     * Si la foto se subió pero falló Sheets,
+     * eliminamos la foto recién creada.
+     */
+    if (
+      uploadedPhoto.id
+    ) {
+
+      deletePhotoFromDrive(
+        uploadedPhoto.id
+      );
+
+    }
+
 
     busy(false);
 
     error(err);
+
   }
+
 }
 
 
@@ -2863,9 +2379,11 @@ async function submit(e) {
    ELIMINAR REGISTRO
 ========================================================= */
 
-function deleteSelectedRecord() {
+async function deleteSelectedRecord() {
 
-  if (!state.selected) {
+  if (
+    !state.selected
+  ) {
 
     toast(
       'Seleccione primero un registro.'
@@ -2877,8 +2395,9 @@ function deleteSelectedRecord() {
 
   const record =
     state.records.find(
-      r =>
-        r.id === state.selected
+      item =>
+        item.id ===
+        state.selected
     );
 
 
@@ -2902,41 +2421,42 @@ function deleteSelectedRecord() {
     window.confirm(
       '¿Está seguro de eliminar el registro de ' +
       victimName +
-      '?\n\nEsta acción eliminará la ficha del almacenamiento local.'
+      '?\n\nEsta acción eliminará el registro de la base central.'
     );
 
 
   if (!confirmed) {
+
     return;
   }
 
 
-  const backup =
-    state.records.map(
-      r => ({...r})
+  try {
+
+    busy(true);
+
+
+    await deleteRecordFromSheet(
+      record.id
     );
 
 
-  try {
-
     state.records =
       state.records.filter(
-        r =>
-          r.id !== record.id
+        item =>
+          item.id !==
+          record.id
       );
 
 
-    saveLocalRecords();
-
-
-    /*
-     * Eliminar foto asociada de Drive.
-     */
-    if (record.fotoId) {
+    if (
+      record.fotoId
+    ) {
 
       deletePhotoFromDrive(
         record.fotoId
       );
+
     }
 
 
@@ -2952,23 +2472,36 @@ function deleteSelectedRecord() {
     applyFilters();
 
 
+    $('updated').textContent =
+      state.records.length
+        ? (
+            'Base central · ' +
+            state.records.length +
+            (
+              state.records.length === 1
+                ? ' registro'
+                : ' registros'
+            )
+          )
+        : 'Sin registros almacenados';
+
+
+    busy(false);
+
+
     toast(
       'Registro eliminado correctamente.'
     );
 
+
   } catch (err) {
 
-    state.records =
-      backup;
+    busy(false);
 
-    applyFilters();
+    error(err);
 
-    error(
-      new Error(
-        'No fue posible eliminar el registro.'
-      )
-    );
   }
+
 }
 
 
@@ -3204,44 +2737,74 @@ $('records').addEventListener(
      * EDITAR
      */
     const editButton =
-      e.target.closest(
-        '.edit-btn'
-      );
+  e.target.closest(
+    '.edit-btn'
+  );
 
-    if (editButton) {
 
-      e.preventDefault();
+if (editButton) {
 
-      e.stopPropagation();
+  e.preventDefault();
 
-      editRecordById(
-        editButton.dataset.id
-      );
+  e.stopPropagation();
 
-      return;
-    }
+
+  if (
+    state.user?.rol !== 'ADMIN'
+  ) {
+
+    toast(
+      'No tiene permiso para editar registros.'
+    );
+
+    return;
+
+  }
+
+
+  editRecordById(
+    editButton.dataset.id
+  );
+
+  return;
+}
 
 
     /*
      * ELIMINAR
      */
     const deleteButton =
-      e.target.closest(
-        '.delete-btn'
-      );
+  e.target.closest(
+    '.delete-btn'
+  );
 
-    if (deleteButton) {
 
-      e.preventDefault();
+if (deleteButton) {
 
-      e.stopPropagation();
+  e.preventDefault();
 
-      deleteRecordById(
-        deleteButton.dataset.id
-      );
+  e.stopPropagation();
 
-      return;
-    }
+
+  if (
+    state.user?.rol !== 'ADMIN'
+  ) {
+
+    toast(
+      'No tiene permiso para eliminar registros.'
+    );
+
+    return;
+
+  }
+
+
+  deleteRecordById(
+    deleteButton.dataset.id
+  );
+
+  return;
+}
 
 
     /*
