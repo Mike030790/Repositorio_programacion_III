@@ -1,12 +1,42 @@
 const APP = {
-  FOLDER_NAME: 'Registro visual de hechos - fotografías',
+
+  SPREADSHEET_ID:
+    '1yjMCH__V-8sNOXF_9Hsv6BtuOdGoyvYe4z4nT65P82g',
+
+  SHEET_GID:
+    544546360,
+
+  USERS_SHEET_NAME:
+    'Usuarios',
+
+  HEADERS: [
+    'id',
+    'fecha',
+    'hora',
+    'victimas',
+    'estructura',
+    'estadoVinculo',
+    'fuente',
+    'barrio',
+    'direccion',
+    'tipo',
+    'latitud',
+    'longitud',
+    'resena',
+    'fotoId',
+    'fotoUrl',
+    'creado'
+  ],
+
+  FOLDER_NAME:
+    'Registro visual de hechos - fotografías',
+
   DEFAULT_CENTER: {
-    lat: 9.9146,
-    lng: -84.1036
+    lat:9.9146,
+    lng:-84.1036
   }
+
 };
-
-
 /* =========================================================
    APLICACIÓN WEB
 ========================================================= */
@@ -29,6 +59,8 @@ function doGet() {
  * y la almacena en Google Drive.
  */
 function uploadPhoto(dataUrl, name) {
+
+  requireAuthorizedUser_();
 
   if (!dataUrl) {
     return {
@@ -131,6 +163,8 @@ function savePhoto_(dataUrl, name) {
 ========================================================= */
 
 function exportPowerPoint(records, periodLabel) {
+
+  requireAdmin_();
 
   const selected =
     normalizeExportRecords_(records);
@@ -708,4 +742,926 @@ function formatDate_(value) {
         .reverse()
         .join('/')
     : '—';
+}
+
+function getSheet_() {
+
+  const spreadsheet =
+    SpreadsheetApp.openById(
+      APP.SPREADSHEET_ID
+    );
+
+
+  const sheet =
+    spreadsheet.getSheetById(
+      APP.SHEET_GID
+    );
+
+
+  if (!sheet) {
+
+    throw new Error(
+      'No se encontró la pestaña configurada en Google Sheets.'
+    );
+
+  }
+
+
+  return sheet;
+}
+
+/* =========================================================
+   USUARIOS Y ROLES
+========================================================= */
+
+function getUsersSheet_() {
+
+  const spreadsheet =
+    SpreadsheetApp.openById(
+      APP.SPREADSHEET_ID
+    );
+
+
+  const sheet =
+    spreadsheet.getSheetByName(
+      APP.USERS_SHEET_NAME
+    );
+
+
+  if (!sheet) {
+
+    throw new Error(
+      'No existe la pestaña "Usuarios".'
+    );
+
+  }
+
+
+  return sheet;
+}
+
+
+
+function getCurrentUserProfile_() {
+
+  const email =
+    String(
+      Session
+        .getActiveUser()
+        .getEmail() || ''
+    )
+    .trim()
+    .toLowerCase();
+
+
+  /*
+   * Google no pudo entregar la identidad.
+   */
+  if (!email) {
+
+    return {
+
+      authorized:false,
+
+      email:'',
+
+      nombre:'',
+
+      rol:'',
+
+      activo:false,
+
+      reason:'NO_EMAIL'
+
+    };
+
+  }
+
+
+  const sheet =
+    getUsersSheet_();
+
+
+  const values =
+    sheet
+      .getDataRange()
+      .getDisplayValues();
+
+
+  const row =
+    values
+      .slice(1)
+      .find(
+        item =>
+          String(item[0])
+            .trim()
+            .toLowerCase() ===
+          email
+      );
+
+
+  /*
+   * El correo existe en Google,
+   * pero no está registrado.
+   */
+  if (!row) {
+
+    return {
+
+      authorized:false,
+
+      email:email,
+
+      nombre:'',
+
+      rol:'',
+
+      activo:false,
+
+      reason:'NOT_REGISTERED'
+
+    };
+
+  }
+
+
+  const nombre =
+    String(
+      row[1] || email
+    ).trim();
+
+
+  const rol =
+    String(
+      row[2] || ''
+    )
+    .trim()
+    .toUpperCase();
+
+
+  const activoText =
+    String(
+      row[3] || ''
+    )
+    .trim()
+    .toUpperCase();
+
+
+  const activo =
+    [
+      'SI',
+      'SÍ',
+      'TRUE',
+      '1',
+      'ACTIVO'
+    ]
+    .includes(
+      activoText
+    );
+
+
+  const validRole =
+    rol === 'ADMIN' ||
+    rol === 'OFICIAL';
+
+
+  return {
+
+    authorized:
+      activo &&
+      validRole,
+
+    email:
+      email,
+
+    nombre:
+      nombre,
+
+    rol:
+      rol,
+
+    activo:
+      activo,
+
+    reason:
+      !activo
+        ? 'INACTIVE'
+        : (
+            !validRole
+              ? 'INVALID_ROLE'
+              : ''
+          )
+
+  };
+
+}
+
+
+
+function requireAuthorizedUser_() {
+
+  const user =
+    getCurrentUserProfile_();
+
+
+  if (!user.authorized) {
+
+    throw new Error(
+      'Usuario no autorizado para utilizar esta aplicación.'
+    );
+
+  }
+
+
+  return user;
+}
+
+
+
+function requireAdmin_() {
+
+  const user =
+    requireAuthorizedUser_();
+
+
+  if (
+    user.rol !== 'ADMIN'
+  ) {
+
+    throw new Error(
+      'Esta operación está disponible únicamente para administradores.'
+    );
+
+  }
+
+
+  return user;
+}
+
+
+function probarConexionHoja() {
+
+  const spreadsheet =
+    SpreadsheetApp.openById(
+      APP.SPREADSHEET_ID
+    );
+
+
+  const sheet =
+    getSheet_();
+
+
+  const resultado = {
+
+    archivo:
+      spreadsheet.getName(),
+
+    pestaña:
+      sheet.getName(),
+
+    filas:
+      sheet.getLastRow(),
+
+    columnas:
+      sheet.getLastColumn()
+
+  };
+
+
+  console.log(
+    JSON.stringify(
+      resultado,
+      null,
+      2
+    )
+  );
+
+
+  return resultado;
+}
+
+/* =========================================================
+   DATOS CENTRALIZADOS EN GOOGLE SHEETS
+========================================================= */
+
+
+/**
+ * Devuelve todos los registros almacenados.
+ */
+function getBootstrapData() {
+
+  const user =
+    getCurrentUserProfile_();
+
+
+  /*
+   * Usuario no autorizado.
+   */
+  if (!user.authorized) {
+
+    return {
+
+      authorized:false,
+
+      user:user,
+
+      records:[],
+
+      center:
+        APP.DEFAULT_CENTER,
+
+      types:[
+        'Arma de fuego',
+        'Arma blanca'
+      ]
+
+    };
+
+  }
+
+
+  /*
+   * ADMIN:
+   * puede recibir todos los registros.
+   *
+   * OFICIAL:
+   * no recibe la base completa.
+   */
+  const records =
+  listRecords_();
+
+
+  return {
+
+    authorized:true,
+
+    user:user,
+
+    records:records,
+
+    center:
+      APP.DEFAULT_CENTER,
+
+    types:[
+      'Arma de fuego',
+      'Arma blanca'
+    ]
+
+  };
+
+}
+
+
+/**
+ * Lee todos los registros de la hoja.
+ */
+function listRecords_() {
+
+  const sheet =
+    getSheet_();
+
+  const values =
+    sheet
+      .getDataRange()
+      .getValues();
+
+
+  /*
+   * Si solamente existe la fila de encabezados,
+   * todavía no hay registros.
+   */
+  if (values.length <= 1) {
+
+    return [];
+
+  }
+
+
+  return values
+
+    .slice(1)
+
+    .filter(
+      row =>
+        row[0]
+    )
+
+    .map(
+      normalizeSheetRow_
+    )
+
+    .reverse();
+}
+
+
+/**
+ * Convierte una fila de Google Sheets
+ * en un objeto que entiende la aplicación.
+ */
+function normalizeSheetRow_(row) {
+
+  let victims = [];
+
+
+  try {
+
+    victims =
+      JSON.parse(
+        row[3] || '[]'
+      );
+
+  } catch (e) {
+
+    victims = [
+      String(
+        row[3] || ''
+      )
+    ];
+
+  }
+
+
+  return {
+
+    id:
+      String(row[0] || ''),
+
+    fecha:
+      formatSheetDate_(
+        row[1]
+      ),
+
+    hora:
+      formatSheetTime_(
+        row[2]
+      ),
+
+    victimas:
+      victims,
+
+    estructura:
+      String(row[4] || ''),
+
+    estadoVinculo:
+      String(row[5] || ''),
+
+    fuente:
+      String(row[6] || ''),
+
+    barrio:
+      String(row[7] || ''),
+
+    direccion:
+      String(row[8] || ''),
+
+    tipo:
+      String(row[9] || ''),
+
+    latitud:
+      Number(row[10]),
+
+    longitud:
+      Number(row[11]),
+
+    resena:
+      String(row[12] || ''),
+
+    fotoId:
+      String(row[13] || ''),
+
+    fotoUrl:
+      String(row[14] || ''),
+
+    creado:
+      row[15]
+        ? String(row[15])
+        : ''
+
+  };
+
+}
+
+
+/**
+ * Convierte las fechas de Sheets a yyyy-MM-dd.
+ */
+function formatSheetDate_(value) {
+
+  if (!value) {
+
+    return '';
+
+  }
+
+
+  if (
+    value instanceof Date
+  ) {
+
+    return Utilities.formatDate(
+      value,
+      Session.getScriptTimeZone(),
+      'yyyy-MM-dd'
+    );
+
+  }
+
+
+  return String(value)
+    .slice(0, 10);
+}
+
+
+/**
+ * Convierte la hora correctamente.
+ */
+function formatSheetTime_(value) {
+
+  if (!value) {
+
+    return '';
+
+  }
+
+
+  if (
+    value instanceof Date
+  ) {
+
+    return Utilities.formatDate(
+      value,
+      Session.getScriptTimeZone(),
+      'HH:mm'
+    );
+
+  }
+
+
+  return String(value);
+}
+
+/* =========================================================
+   GUARDAR / ACTUALIZAR REGISTRO EN GOOGLE SHEETS
+========================================================= */
+
+function saveRecord(record) {
+
+  const user =
+  requireAuthorizedUser_();
+
+  validateCentralRecord_(record);
+
+  const lock =
+    LockService.getScriptLock();
+
+  lock.waitLock(30000);
+
+
+  try {
+
+    const sheet =
+      getSheet_();
+
+    const values =
+      sheet
+        .getDataRange()
+        .getValues();
+
+
+    const id =
+      String(
+        record.id ||
+        Utilities.getUuid()
+      );
+
+
+    /*
+     * Buscar si el registro ya existe.
+     * Si existe = EDITAR.
+     * Si no existe = NUEVO.
+     */
+    const existingIndex =
+      values.findIndex(
+        (row, index) =>
+          index > 0 &&
+          String(row[0]) === id
+      );
+       /*
+       * Un OFICIAL puede CREAR registros,
+       * pero jamás modificar uno existente.
+        */
+       if (
+         existingIndex >= 1 &&
+          user.rol !== 'ADMIN'
+        ) {
+
+          throw new Error(
+            'Los oficiales no pueden modificar registros enviados.'
+          );
+
+        }
+
+
+
+    
+    let creado =
+      String(
+        record.creado ||
+        new Date().toISOString()
+      );
+
+
+    /*
+     * Al editar conservamos la fecha
+     * de creación original.
+     */
+    if (
+      existingIndex >= 1 &&
+      values[existingIndex][15]
+    ) {
+
+      creado =
+        String(
+          values[existingIndex][15]
+        );
+
+    }
+
+
+    const victims =
+      Array.isArray(record.victimas)
+        ? record.victimas
+            .map(String)
+            .map(v => v.trim())
+            .filter(Boolean)
+        : [];
+
+
+    const row = [
+
+      id,
+
+      String(
+        record.fecha || ''
+      ),
+
+      String(
+        record.hora || ''
+      ),
+
+      JSON.stringify(
+        victims
+      ),
+
+      String(
+        record.estructura ||
+        'Sin determinar'
+      ),
+
+      String(
+        record.estadoVinculo ||
+        ''
+      ),
+
+      String(
+        record.fuente ||
+        ''
+      ),
+
+      String(
+        record.barrio ||
+        ''
+      ),
+
+      String(
+        record.direccion ||
+        ''
+      ),
+
+      String(
+        record.tipo ||
+        ''
+      ),
+
+      Number(
+        record.latitud
+      ),
+
+      Number(
+        record.longitud
+      ),
+
+      String(
+        record.resena ||
+        ''
+      ),
+
+      String(
+        record.fotoId ||
+        ''
+      ),
+
+      String(
+        record.fotoUrl ||
+        ''
+      ),
+
+      creado
+
+    ];
+
+
+    if (
+      existingIndex >= 1
+    ) {
+
+      /*
+       * EDITAR REGISTRO EXISTENTE
+       */
+      sheet
+        .getRange(
+          existingIndex + 1,
+          1,
+          1,
+          row.length
+        )
+        .setValues([
+          row
+        ]);
+
+    } else {
+
+      /*
+       * REGISTRO NUEVO
+       */
+      sheet.appendRow(
+        row
+      );
+
+    }
+
+
+    return normalizeSheetRow_(
+      row
+    );
+
+
+  } finally {
+
+    lock.releaseLock();
+
+  }
+
+}
+
+
+
+/* =========================================================
+   ELIMINAR REGISTRO DE GOOGLE SHEETS
+========================================================= */
+
+function deleteRecord(id) {
+    
+    requireAdmin_();
+
+  id =
+    String(id || '');
+
+
+  if (!id) {
+
+    throw new Error(
+      'El ID del registro no es válido.'
+    );
+
+  }
+
+
+  const lock =
+    LockService.getScriptLock();
+
+  lock.waitLock(30000);
+
+
+  try {
+
+    const sheet =
+      getSheet_();
+
+    const values =
+      sheet
+        .getDataRange()
+        .getValues();
+
+
+    const index =
+      values.findIndex(
+        (row, position) =>
+          position > 0 &&
+          String(row[0]) === id
+      );
+
+
+    if (
+      index < 1
+    ) {
+
+      throw new Error(
+        'No se encontró el registro solicitado.'
+      );
+
+    }
+
+
+    sheet.deleteRow(
+      index + 1
+    );
+
+
+    return {
+      ok:true,
+      id:id
+    };
+
+
+  } finally {
+
+    lock.releaseLock();
+
+  }
+
+}
+
+
+
+/* =========================================================
+   VALIDAR REGISTRO
+========================================================= */
+
+function validateCentralRecord_(record) {
+
+  if (!record) {
+
+    throw new Error(
+      'No se recibió información del registro.'
+    );
+
+  }
+
+
+  if (
+    !record.fecha ||
+    !record.hora ||
+    !record.barrio ||
+    !record.tipo
+  ) {
+
+    throw new Error(
+      'Complete los campos obligatorios.'
+    );
+
+  }
+
+
+  if (
+    !Array.isArray(record.victimas) ||
+    !record.victimas.some(
+      victim =>
+        String(victim).trim()
+    )
+  ) {
+
+    throw new Error(
+      'Ingrese una víctima.'
+    );
+
+  }
+
+
+  const lat =
+    Number(
+      record.latitud
+    );
+
+  const lng =
+    Number(
+      record.longitud
+    );
+
+
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lng) ||
+    lat < -90 ||
+    lat > 90 ||
+    lng < -180 ||
+    lng > 180
+  ) {
+
+    throw new Error(
+      'La ubicación no es válida.'
+    );
+
+  }
+
 }
