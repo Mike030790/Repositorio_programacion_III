@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabores de Costa Rica</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: linear-gradient(180deg, #fdfdfd 0%, #f5f5f5 100%);
+            color: #1b1b1b;
+        }
+
+        header {
+            background: url("https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80") center/cover no-repeat;
+            min-height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            color: #fff;
+        }
+
+        header::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 27, 19, 0.6);
+        }
+
+        header h1 {
+            position: relative;
+            font-size: clamp(2.5rem, 4vw, 4.5rem);
+            text-align: center;
+            max-width: 90%;
+            line-height: 1.2;
+            margin: 0;
+        }
+
+        main {
+            padding: 3rem clamp(1rem, 5vw, 5rem);
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .intro p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin: 0 auto;
+            max-width: 720px;
+            color: #444;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(27, 53, 40, 0.15);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 36px rgba(16, 45, 32, 0.18);
+        }
+
+        .card img {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .card h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #1b4332;
+        }
+
+        .card p {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .ingredients {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1.5rem;
+            margin-top: 4rem;
+        }
+
+        .ingredient-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 1rem;
+            box-shadow: 0 10px 22px rgba(40, 80, 60, 0.12);
+            text-align: center;
+        }
+
+        .ingredient-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #fff;
+            background: linear-gradient(120deg, #2d6a4f, #1b4332);
+            margin-top: 4rem;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sabores tradicionales de Costa Rica</h1>
+    </header>
+    <main>
+        <section class="intro">
+            <p>
+                Costa Rica ofrece una gastronomía vibrante que combina productos frescos del trópico con influencias indígenas, africanas y españolas. A continuación exploramos algunos de sus platillos más representativos, perfectos para descubrir el "pura vida" a través del sabor.
+            </p>
+        </section>
+
+        <section class="grid" aria-label="Platillos típicos de Costa Rica">
+            <article class="card">
+                <img src="https://images.unsplash.com/photo-1604908177429-96e0b0bac987?auto=format&fit=crop&w=900&q=80" alt="Gallo pinto con plátano maduro y huevo">
+                <div class="card-content">
+                    <h2>Gallo Pinto</h2>
+                    <p>
+                        Mezcla de arroz y frijoles negros salteados con cebolla, chile dulce y culantro. Tradicionalmente se sirve en el desayuno acompañado de natilla, plátano maduro y huevos.
+                    </p>
+                </div>
+            </article>
+
+            <article class="card">
+                <img src="https://images.unsplash.com/photo-1589308078053-f13ff1ab4f96?auto=format&fit=crop&w=900&q=80" alt="Casado de carne con ensaladas y arroz">
+                <div class="card-content">
+                    <h2>Casado</h2>
+                    <p>
+                        Plato completo compuesto por arroz, frijoles, una proteína a elección (carne, pollo o pescado), ensalada fresca, plátano frito y picadillo de vegetales.
+                    </p>
+                </div>
+            </article>
+
+            <article class="card">
+                <img src="https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&w=900&q=80" alt="Olla de carne con vegetales frescos">
+                <div class="card-content">
+                    <h2>Olla de Carne</h2>
+                    <p>
+                        Sopa robusta preparada con carne de res y abundantes vegetales tropicales como yuca, chayote, elote y zanahoria. Ideal para los almuerzos familiares de fin de semana.
+                    </p>
+                </div>
+            </article>
+
+            <article class="card">
+                <img src="https://images.unsplash.com/photo-1572552635835-3e72c74c36f9?auto=format&fit=crop&w=900&q=80" alt="Tamales envueltos en hojas de plátano">
+                <div class="card-content">
+                    <h2>Tamales</h2>
+                    <p>
+                        Preparados en masa de maíz sazonada con caldo y especias, rellenos de carne, arroz y vegetales. Se envuelven en hojas de plátano y se cocinan al vapor, especialmente populares en Navidad.
+                    </p>
+                </div>
+            </article>
+        </section>
+
+        <section class="ingredients" aria-label="Ingredientes tradicionales">
+            <article class="ingredient-card">
+                <img src="https://images.unsplash.com/photo-1587731544324-488efef2cfb9?auto=format&fit=crop&w=600&q=80" alt="Plátanos maduros">
+                <h3>Plátano maduro</h3>
+                <p>Dulce y suave, se fríe o se hornea para acompañar platos principales o postres.</p>
+            </article>
+            <article class="ingredient-card">
+                <img src="https://images.unsplash.com/photo-1604908177507-849d62eb6f22?auto=format&fit=crop&w=600&q=80" alt="Arroz blanco cocido">
+                <h3>Arroz</h3>
+                <p>Base de la dieta costarricense, indispensable en el gallo pinto y el casado.</p>
+            </article>
+            <article class="ingredient-card">
+                <img src="https://images.unsplash.com/photo-1514996937319-344454492b37?auto=format&fit=crop&w=600&q=80" alt="Frijoles negros">
+                <h3>Frijoles negros</h3>
+                <p>Ricos en proteína y sabor, se sirven enteros o en puré, destacando en desayunos y almuerzos.</p>
+            </article>
+            <article class="ingredient-card">
+                <img src="https://images.unsplash.com/photo-1584270354949-1f5cba699823?auto=format&fit=crop&w=600&q=80" alt="Yuca fresca cortada">
+                <h3>Yuca</h3>
+                <p>Tubérculo de textura suave que se disfruta hervido, frito o en sopas como la olla de carne.</p>
+            </article>
+        </section>
+    </main>
+    <footer>
+        <p>Inspirado en la riqueza gastronómica de Costa Rica — ¡Buen provecho!</p>
+    </footer>
+</body>
+</html>
